@@ -1,0 +1,23 @@
+name: single-commit
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require exactly one commit
+        run: |
+          count=$(git rev-list --count HEAD)
+          echo "commit count: $count"
+          if [ "$count" -ne 1 ]; then
+            echo "::error::This profile repo must have exactly 1 commit (found $count). Amend or orphan-rewrite, then force-push master. See AGENTS.md."
+            exit 1
+          fi
